@@ -15,3 +15,8 @@
 - Date: 2026-01-05
 - Status: Completed
 
+
+## [4] Add base HTML template layout
+- Date: 2026-01-06
+- Status: Completed
+

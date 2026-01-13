@@ -35,3 +35,8 @@
 - Date: 2026-01-11
 - Status: Completed
 
+
+## [8] Add color space conversion utilities
+- Date: 2026-01-13
+- Status: Completed
+

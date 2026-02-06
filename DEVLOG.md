@@ -115,3 +115,8 @@
 - Date: 2026-02-05
 - Status: Completed
 
+
+## [24] Add drag and drop file upload UI
+- Date: 2026-02-06
+- Status: Completed
+

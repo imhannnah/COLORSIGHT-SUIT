@@ -225,3 +225,8 @@
 - Date: 2026-03-12
 - Status: Completed
 
+
+## [46] Fix navbar active state highlighting
+- Date: 2026-03-14
+- Status: Completed
+

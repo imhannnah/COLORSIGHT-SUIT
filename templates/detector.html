@@ -1,0 +1,375 @@
+{% extends "base.html" %}
+{% block title %}ColorSight – Accessibility Audit{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="breadcrumb">Module 04</div>
+    <h1>Color Accessibility Audit</h1>
+    <p>Detect color-only information cues, check WCAG contrast ratios, simulate CVD impact, and get actionable fixes.</p>
+</div>
+
+<div class="detector-lab">
+
+    <!-- Step indicator -->
+    <div class="audit-steps" id="auditSteps">
+        <div class="audit-step-item active" id="step1">
+            <div class="asi-num">1</div>
+            Upload Design
+        </div>
+        <div class="audit-step-connector"></div>
+        <div class="audit-step-item" id="step2">
+            <div class="asi-num">2</div>
+            Analyzing
+        </div>
+        <div class="audit-step-connector"></div>
+        <div class="audit-step-item" id="step3">
+            <div class="asi-num">3</div>
+            Review Results
+        </div>
+    </div>
+
+    <!-- Upload card -->
+    <div class="detector-upload-card" id="uploadCard">
+        <h2>Upload Design or Screenshot</h2>
+        <p class="card-desc">Upload any UI screenshot, design mockup, or image. The engine extracts dominant colors, detects text areas, analyzes CVD impact, and generates a risk heatmap.</p>
+        <form id="auditForm" enctype="multipart/form-data">
+            <div class="file-drop" id="fileDrop">
+                <input type="file" name="image" id="imageInput" accept="image/*" required>
+                <div class="file-drop-label" id="dropLabel">
+                    <span class="drop-icon" style="font-size:2rem;flex-shrink:0;">🖼️</span>
+                    <div style="flex:1;">
+                        <span class="drop-main">Drop your design here or click to browse</span>
+                        <span class="drop-sub">PNG, JPG, WebP — up to 16MB</span>
+                    </div>
+                    <div id="fileChosen" style="display:none;flex-shrink:0;">
+                        <span style="font-size:0.78rem;color:var(--success);font-weight:600;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);padding:0.25rem 0.75rem;border-radius:100px;">✓ Ready</span>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-top:1.25rem;display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;">
+                <button type="submit" class="btn btn-primary btn-lg" id="auditBtn" style="min-width:180px;" disabled>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <span style="margin-left:6px;font-weight:700;">Run Audit</span>
+                </button>
+                <span id="fileNameLabel" style="font-size:0.82rem;color:var(--muted);"></span>
+            </div>
+        </form>
+    </div>
+
+    <!-- Loading state -->
+    <div class="detector-loading" id="loading">
+        <div class="det-spinner"></div>
+        <span class="det-loading-text">Analyzing accessibility…</span>
+        <div class="det-loading-steps">
+            <span class="det-loading-step active" id="ls1">Extracting colors</span>
+            <span class="det-loading-step" id="ls2">CVD simulation</span>
+            <span class="det-loading-step" id="ls3">Contrast matrix</span>
+            <span class="det-loading-step" id="ls4">Generating heatmap</span>
+        </div>
+    </div>
+
+    <!-- Results -->
+    <div class="detector-results" id="results">
+
+        <!-- Score + summary row -->
+        <div class="det-results-header">
+            <div class="det-score-block">
+                <span class="det-score-label">Accessibility Score</span>
+                <div class="score-circle" id="scoreCircle">
+                    <span class="score-grade" id="scoreGrade">–</span>
+                    <span class="score-number" id="scoreNumber">–/100</span>
+                </div>
+                <div class="det-score-issues" id="issueSummary"></div>
+                <div id="textScanInfo"></div>
+            </div>
+            <div class="det-summary-block">
+                <div class="det-summary-title">Audit Summary</div>
+                <div id="recsCard" style="display:none;">
+                    <ul class="recs-list" id="recsList"></ul>
+                </div>
+                <div style="margin-top:auto;padding-top:1rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
+                    <button id="downloadReportBtn" class="btn btn-secondary btn-sm">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        PDF Report
+                    </button>
+                    <button class="btn btn-secondary btn-sm" id="restartBtn">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.99"/></svg>
+                        New Audit
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab navigation -->
+        <div class="det-tabs" role="tablist">
+            <button class="det-tab-btn active" data-tab="tabImage" role="tab" aria-selected="true">Image View</button>
+            <button class="det-tab-btn" data-tab="tabIssues" role="tab" aria-selected="false">Issues</button>
+            <button class="det-tab-btn" data-tab="tabCVD" role="tab" aria-selected="false">CVD Simulations</button>
+            <button class="det-tab-btn" data-tab="tabColors" role="tab" aria-selected="false">Color Palette</button>
+            <button class="det-tab-btn" data-tab="tabContrast" role="tab" aria-selected="false">Contrast Table</button>
+        </div>
+
+        <!-- Tab: Image -->
+        <div class="det-tab-panel active" id="tabImage" role="tabpanel">
+            <div class="det-img-viewer">
+                <div class="det-img-controls">
+                    <button class="img-tab-btn active" data-view="original">Original</button>
+                    <button class="img-tab-btn" data-view="annotated">Annotated</button>
+                    <button class="img-tab-btn" data-view="heatmap">Risk Heatmap</button>
+                </div>
+                <div class="det-img-display">
+                    <img id="mainViewImg" alt="Image view">
+                    <p class="img-legend" id="imgLegend"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Issues -->
+        <div class="det-tab-panel" id="tabIssues" role="tabpanel">
+            <div class="issue-filters">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="high">High</button>
+                <button class="filter-btn" data-filter="medium">Medium</button>
+                <button class="filter-btn" data-filter="low">Low</button>
+            </div>
+            <div id="issuesList"></div>
+        </div>
+
+        <!-- Tab: CVD Simulations -->
+        <div class="det-tab-panel" id="tabCVD" role="tabpanel">
+            <div class="sim-grid" id="simGrid"></div>
+            <div style="margin-top:1.5rem;" id="cvdBreakdown"></div>
+        </div>
+
+        <!-- Tab: Colors -->
+        <div class="det-tab-panel" id="tabColors" role="tabpanel">
+            <h3 style="font-family:var(--font-h);font-size:1rem;font-weight:700;color:var(--white);margin-bottom:1rem;">Dominant Colors</h3>
+            <div class="color-palette" id="colorPalette"></div>
+            <h3 style="font-family:var(--font-h);font-size:1rem;font-weight:700;color:var(--white);margin:1.5rem 0 1rem;">CVD-Safe Palette</h3>
+            <div style="display:flex;flex-direction:column;gap:0.5rem;" id="safePalette"></div>
+        </div>
+
+        <!-- Tab: Contrast -->
+        <div class="det-tab-panel" id="tabContrast" role="tabpanel">
+            <div id="contrastTableWrap"></div>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const imageInput = document.getElementById('imageInput');
+    const fileDrop   = document.getElementById('fileDrop');
+    const dropLabel  = document.getElementById('dropLabel');
+    const auditBtn   = document.getElementById('auditBtn');
+    const loading    = document.getElementById('loading');
+    const results    = document.getElementById('results');
+    const uploadCard = document.getElementById('uploadCard');
+    const step1 = document.getElementById('step1');
+    const step2 = document.getElementById('step2');
+    const step3 = document.getElementById('step3');
+    let auditData = null;
+    let imageViews = {};
+
+    imageInput.addEventListener('change', function () {
+        if (this.files[0]) {
+            const f = this.files[0];
+            document.querySelector('#dropLabel .drop-main').textContent = 'File selected — ready to audit';
+            document.querySelector('#dropLabel .drop-sub').textContent = f.name + ' · ' + (f.size/1024/1024).toFixed(1) + ' MB';
+            document.getElementById('fileChosen').style.display = '';
+            document.querySelector('#dropLabel .drop-icon').textContent = '✅';
+            document.getElementById('fileNameLabel').textContent = '';
+            auditBtn.disabled = false;
+        }
+    });
+
+    fileDrop.addEventListener('dragover', e => { e.preventDefault(); fileDrop.classList.add('dragover'); });
+    fileDrop.addEventListener('dragleave', () => fileDrop.classList.remove('dragover'));
+    fileDrop.addEventListener('drop', e => {
+        e.preventDefault(); fileDrop.classList.remove('dragover');
+        if (e.dataTransfer.files[0]) { imageInput.files = e.dataTransfer.files; imageInput.dispatchEvent(new Event('change')); }
+    });
+
+    document.getElementById('auditForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        auditBtn.disabled = true;
+        auditBtn.innerHTML = '<div class="btn-spinner"></div> Analyzing…';
+        uploadCard.style.opacity = '0.4';
+        uploadCard.style.pointerEvents = 'none';
+        loading.style.display = 'flex';
+        results.classList.remove('active');
+
+        // Animate loading steps
+        step1.classList.remove('active'); step2.classList.add('active');
+        const lSteps = ['ls1','ls2','ls3','ls4'];
+        let li = 0;
+        const lInt = setInterval(() => {
+            document.querySelectorAll('.det-loading-step').forEach(s => s.classList.remove('active'));
+            if (li < lSteps.length) document.getElementById(lSteps[li]).classList.add('active');
+            li++;
+        }, 600);
+
+        try {
+            const resp = await fetch('/detector/analyze', { method: 'POST', body: new FormData(this) });
+            if (!resp.ok) {
+                const err = await resp.json().catch(() => ({ error: 'Server error' }));
+                throw new Error(err.error || 'Server error');
+            }
+            auditData = await resp.json();
+            clearInterval(lInt);
+            loading.style.display = 'none';
+            uploadCard.style.opacity = '1';
+            uploadCard.style.pointerEvents = '';
+            step2.classList.remove('active'); step3.classList.add('active');
+            results.classList.add('active');
+            renderResults(auditData);
+        } catch (err) {
+            clearInterval(lInt);
+            loading.style.display = 'none';
+            uploadCard.style.opacity = '1';
+            uploadCard.style.pointerEvents = '';
+            step2.classList.remove('active'); step1.classList.add('active');
+            alert('Audit failed: ' + err.message);
+        } finally {
+            auditBtn.disabled = false;
+            auditBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Run Audit';
+        }
+    });
+
+    document.getElementById('restartBtn').addEventListener('click', function () {
+        results.classList.remove('active');
+        step3.classList.remove('active', 'done'); step1.classList.add('active');
+        uploadCard.style.opacity = '1';
+        uploadCard.style.pointerEvents = '';
+        dropLabel.innerHTML = '<span class="drop-icon">🖼️</span><div><span class="drop-main">Drop your design here</span><span class="drop-sub">PNG, JPG, WebP — up to 16MB</span></div>';
+        auditBtn.disabled = true;
+        imageInput.value = '';
+    });
+
+    document.getElementById('downloadReportBtn').addEventListener('click', async function () {
+        if (!auditData) return;
+        this.disabled = true; this.textContent = 'Generating…';
+        try {
+            const resp = await fetch('/detector/report', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ audit: auditData.audit, colors: auditData.colors }) });
+            const blob = await resp.blob();
+            const url  = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = 'colorsight_report.pdf'; a.click();
+            URL.revokeObjectURL(url);
+        } catch (err) { alert('Report error: ' + err.message); }
+        finally {
+            this.disabled = false;
+            this.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> PDF Report';
+        }
+    });
+
+    document.querySelectorAll('.det-tab-btn').forEach(b => b.addEventListener('click', function () {
+        document.querySelectorAll('.det-tab-btn').forEach(x => { x.classList.remove('active'); x.setAttribute('aria-selected', 'false'); });
+        document.querySelectorAll('.det-tab-panel').forEach(x => x.classList.remove('active'));
+        this.classList.add('active'); this.setAttribute('aria-selected', 'true');
+        document.getElementById(this.dataset.tab).classList.add('active');
+    }));
+
+    document.querySelectorAll('.img-tab-btn').forEach(b => b.addEventListener('click', function () {
+        document.querySelectorAll('.img-tab-btn').forEach(x => x.classList.remove('active'));
+        this.classList.add('active');
+        const v = this.dataset.view;
+        document.getElementById('mainViewImg').src = 'data:image/png;base64,' + imageViews[v];
+        const legends = {
+            original: 'Original uploaded image',
+            annotated: 'Red/orange = color-critical regions · Magenta = text contrast failures · Cyan = low-contrast borders',
+            heatmap: 'Risk heatmap — Red = high risk · Yellow = medium · Green = low'
+        };
+        document.getElementById('imgLegend').textContent = legends[v] || '';
+    }));
+
+    document.querySelectorAll('.filter-btn').forEach(b => b.addEventListener('click', function () {
+        document.querySelectorAll('.filter-btn').forEach(x => x.classList.remove('active'));
+        this.classList.add('active');
+        const f = this.dataset.filter;
+        document.querySelectorAll('.issue-item').forEach(item => {
+            item.style.display = (f === 'all' || item.dataset.severity === f) ? '' : 'none';
+        });
+    }));
+
+    function renderResults(data) {
+        const audit = data.audit;
+        imageViews = { original: data.original, annotated: data.annotated, heatmap: data.heatmap };
+        document.getElementById('mainViewImg').src = 'data:image/png;base64,' + data.original;
+
+        document.getElementById('scoreGrade').textContent  = audit.grade;
+        document.getElementById('scoreNumber').textContent = audit.score + '/100';
+        document.getElementById('scoreCircle').className   = 'score-circle grade-' + audit.grade.toLowerCase();
+
+        const s = audit.summary;
+        document.getElementById('issueSummary').innerHTML = `<span class="issue-high">${s.high} High</span><span class="issue-med"> · ${s.medium} Med</span><span class="issue-low"> · ${s.low} Low</span>`;
+        document.getElementById('textScanInfo').innerHTML  = `<span class="text-scan-badge">📝 Text areas: ${audit.text_areas_scanned} scanned · ${audit.text_areas_failing} failing AA</span>`;
+
+        if (audit.recommendations && audit.recommendations.length) {
+            document.getElementById('recsList').innerHTML = audit.recommendations.map(r => `<li>${r}</li>`).join('');
+            document.getElementById('recsCard').style.display = '';
+        }
+
+        const simGrid = document.getElementById('simGrid');
+        simGrid.innerHTML = '';
+        const labels = { protanopia: 'Protanopia', deuteranopia: 'Deuteranopia', tritanopia: 'Tritanopia', achromatopsia: 'Achromatopsia' };
+        for (const [k, b64] of Object.entries(data.simulations)) {
+            simGrid.innerHTML += `<div class="sim-item"><img src="data:image/png;base64,${b64}" alt="${labels[k]}"><span>${labels[k]}</span></div>`;
+        }
+
+        const cvdDiv = document.getElementById('cvdBreakdown');
+        cvdDiv.innerHTML = '';
+        if (audit.cvd_breakdown) {
+            for (const [k, v] of Object.entries(audit.cvd_breakdown)) {
+                const sc = v.status === 'pass' ? 'cvd-pass' : v.status === 'warn' ? 'cvd-warn' : 'cvd-fail';
+                let mergeHtml = '';
+                if (v.merges && v.merges.length) {
+                    mergeHtml = '<ul class="merge-list">' + v.merges.map(m => `<li><span class="issue-swatch" style="background:${m.c1}"></span>${m.n1} ↔ <span class="issue-swatch" style="background:${m.c2}"></span>${m.n2}<span class="merge-dist">${m.orig_dist}→${m.sim_dist}</span></li>`).join('') + '</ul>';
+                }
+                cvdDiv.innerHTML += `<div class="cvd-card-det ${sc}"><div class="cvd-header"><span class="cvd-status-dot"></span><strong>${v.label}</strong><span class="cvd-merge-count">${v.merge_count} pair${v.merge_count!==1?'s':''} merge</span></div>${mergeHtml}</div>`;
+            }
+        }
+
+        const wrap = document.getElementById('contrastTableWrap');
+        if (audit.contrast_matrix && audit.contrast_matrix.length) {
+            let html = '<table class="contrast-table"><thead><tr><th>Color 1</th><th>Color 2</th><th>Ratio</th><th>AA Text</th><th>AA Large</th><th>AAA</th></tr></thead><tbody>';
+            audit.contrast_matrix.forEach(e => {
+                const rc = e.ratio < 3 ? 'ratio-fail' : e.ratio < 4.5 ? 'ratio-warn' : 'ratio-pass';
+                html += `<tr><td><span class="issue-swatch" style="background:${e.color1}"></span> ${e.name1}</td><td><span class="issue-swatch" style="background:${e.color2}"></span> ${e.name2}</td><td class="ratio-cell ${rc}">${e.ratio}:1</td><td>${e.wcag_aa_normal?'✅':'❌'}</td><td>${e.wcag_aa_large?'✅':'❌'}</td><td>${e.wcag_aaa?'✅':'❌'}</td></tr>`;
+            });
+            wrap.innerHTML = html + '</tbody></table>';
+        }
+
+        const pal = document.getElementById('colorPalette');
+        pal.innerHTML = '';
+        data.colors.forEach(c => {
+            const hex = c.hex.startsWith('#') ? c.hex : '#' + c.hex;
+            pal.innerHTML += `<div class="color-chip"><div class="chip-swatch" style="background:${hex}"></div><div class="chip-info"><strong>${c.name}</strong><span style="font-family:var(--font-mono);font-size:0.82rem;font-weight:700;color:var(--primary);">${hex}</span><span style="color:var(--muted2);font-size:0.72rem;">${c.pct}%</span></div></div>`;
+        });
+
+        const safePal = document.getElementById('safePalette');
+        safePal.innerHTML = '';
+        if (audit.safe_palette) {
+            audit.safe_palette.forEach(c => {
+                const hex = c.hex.startsWith('#') ? c.hex : '#' + c.hex;
+                safePal.innerHTML += `<div class="color-chip safe-chip"><div class="chip-swatch" style="background:${hex}"></div><div class="chip-info"><strong>${c.name}</strong><span style="font-family:var(--font-mono);font-size:0.82rem;font-weight:700;color:var(--success);">${hex}</span></div></div>`;
+            });
+        }
+
+        const list = document.getElementById('issuesList');
+        if (!audit.issues.length) { list.innerHTML = '<div class="alert alert-success">No significant accessibility issues detected — great work!</div>'; return; }
+        list.innerHTML = '';
+        audit.issues.forEach(issue => {
+            const sc = issue.severity === 'high' ? 'sev-high' : issue.severity === 'medium' ? 'sev-med' : 'sev-low';
+            let extra = '';
+            if (issue.colors) extra += '<div class="issue-colors">' + issue.colors.map(c => `<span class="issue-swatch" style="background:${c}"></span>`).join('') + (issue.ratio ? `<span class="issue-ratio"> ${issue.ratio}:1</span>` : '') + '</div>';
+            if (issue.suggestion) extra += `<div class="issue-suggestion">💡 ${issue.suggestion}</div>`;
+            list.innerHTML += `<div class="issue-item ${sc}" data-severity="${issue.severity}"><span class="issue-sev-badge">${issue.severity.toUpperCase()}</span><span class="issue-type-badge">${issue.type.replace(/_/g,' ')}</span><p>${issue.message}</p>${extra}</div>`;
+        });
+    }
+});
+</script>
+{% endblock %}

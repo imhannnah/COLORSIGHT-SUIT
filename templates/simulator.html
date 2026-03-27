@@ -1,0 +1,257 @@
+{% extends "base.html" %}
+{% block title %}ColorSight – Color Blindness Simulator{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="breadcrumb">Module 01</div>
+    <h1>Color Blindness Simulator</h1>
+    <p>Upload any image and see exactly how it appears under four types of color vision deficiency.</p>
+</div>
+
+<div class="sim-tool">
+
+    <!-- Loading state -->
+    <div class="sim-loading" id="simLoading">
+        <div class="sim-loading-ring"></div>
+        <span class="sim-loading-text">Running simulation…</span>
+    </div>
+
+    <!-- Upload / Config state -->
+    <div class="sim-upload-state" id="simUploadState">
+        <div class="sim-upload-heading">
+            <h2>See the world through different eyes</h2>
+            <p>Upload a design, photo, or screenshot — the simulator applies clinical CVD matrices in real time.</p>
+        </div>
+
+        <div class="sim-drop-zone" id="simDrop">
+            <input type="file" name="image" id="imageInput" accept="image/*" required aria-label="Upload image">
+            <div class="sim-drop-inner">
+                <div class="sim-drop-icon" id="simDropIcon">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                        <rect x="3" y="3" width="18" height="18" rx="3"/>
+                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                        <polyline points="21 15 16 10 5 21"/>
+                    </svg>
+                </div>
+                <span class="sim-drop-main" id="simDropMain">Drop image here</span>
+                <span class="sim-drop-sub" id="simDropSub">JPG &middot; PNG &middot; WebP &middot; up to 16 MB</span>
+            </div>
+        </div>
+
+        <div class="sim-cvd-selector">
+            <label>Color Vision Deficiency Type</label>
+            <div class="sim-cvd-grid">
+                {% set dots = {'protanopia':'#EF4444','deuteranopia':'#10B981','tritanopia':'#06B6D4','achromatopsia':'#94A3B8'} %}
+                {% set subs = {'protanopia':'1.3% of males','deuteranopia':'5% of males','tritanopia':'Very rare','achromatopsia':'Extremely rare'} %}
+                {% for key, label in cvd_labels.items() %}
+                <label class="sim-cvd-opt {% if loop.first %}selected{% endif %}">
+                    <input type="radio" name="deficiency" value="{{ key }}" {% if loop.first %}checked{% endif %}>
+                    <span class="sim-cvd-dot" style="background:{{ dots.get(key,'#888') }};box-shadow:0 0 8px {{ dots.get(key,'#888') }}44;"></span>
+                    <span class="sim-cvd-name">{{ label.split('(')[0].strip() }}</span>
+                    <span class="sim-cvd-sub">{{ subs.get(key,'') }}</span>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="sim-submit-row">
+            <button type="button" class="btn btn-primary btn-lg" id="simulateBtn" disabled aria-live="polite">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                </svg>
+                <span id="simBtnLabel" style="margin-left:8px;font-weight:700;">Simulate Vision</span>
+            </button>
+            <span class="sim-info-note">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Images are processed server-side and never stored
+            </span>
+        </div>
+    </div>
+
+    <!-- Alert area -->
+    <div id="simAlert" style="display:none;margin-top:1rem;"></div>
+
+    <!-- Results state -->
+    <div class="sim-results-state" id="simResultsState">
+
+        <div class="sim-results-header">
+            <div class="sim-results-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                Simulation Result
+            </div>
+            <span class="sim-results-badge" id="simResultsBadge">Protanopia</span>
+        </div>
+
+        <div class="sim-compare-grid single" id="simCompareGrid">
+            <div class="sim-compare-panel sim-original-panel">
+                <span class="sim-panel-label">Original</span>
+                <img id="originalImg" alt="Original image">
+            </div>
+            <div class="sim-compare-panel">
+                <span class="sim-panel-label" id="simPanelLabel">As seen with Protanopia</span>
+                <img id="simulatedImg" alt="Simulated vision">
+            </div>
+        </div>
+
+        <div class="sim-actions-row">
+            <button class="btn btn-secondary" id="compareToggle" aria-pressed="false">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
+                Compare with Original
+            </button>
+            <a id="downloadBtn" class="btn btn-secondary" style="display:none;" download="simulation.png">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Save Image
+            </a>
+            <button class="btn btn-primary" id="startOverBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.99"/></svg>
+                New Simulation
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- CVD Info Strip -->
+<div class="sim-cvd-info">
+    <div class="sim-cvd-card" style="border-top-color:var(--danger);">
+        <div class="sim-cvd-card-title">Protanopia</div>
+        <div class="sim-cvd-card-desc">Reds appear dark. Affects 1.3% of males. Red and green are easily confused.</div>
+    </div>
+    <div class="sim-cvd-card" style="border-top-color:var(--success);">
+        <div class="sim-cvd-card-title">Deuteranopia</div>
+        <div class="sim-cvd-card-desc">Greens appear brownish. The most common CVD — affects ~5% of males.</div>
+    </div>
+    <div class="sim-cvd-card" style="border-top-color:var(--primary);">
+        <div class="sim-cvd-card-title">Tritanopia</div>
+        <div class="sim-cvd-card-desc">Blues and yellows merge. Very rare — affects 0.01% of the population.</div>
+    </div>
+    <div class="sim-cvd-card" style="border-top-color:#94A3B8;">
+        <div class="sim-cvd-card-title">Achromatopsia</div>
+        <div class="sim-cvd-card-desc">Total color blindness. Extremely rare. Only luminance differences visible.</div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const imageInput   = document.getElementById('imageInput');
+    const simDrop      = document.getElementById('simDrop');
+    const simDropMain  = document.getElementById('simDropMain');
+    const simDropSub   = document.getElementById('simDropSub');
+    const simDropIcon  = document.getElementById('simDropIcon');
+    const simulateBtn  = document.getElementById('simulateBtn');
+    const simBtnLabel  = document.getElementById('simBtnLabel');
+    const uploadState  = document.getElementById('simUploadState');
+    const resultsState = document.getElementById('simResultsState');
+    const loadingState = document.getElementById('simLoading');
+    const originalImg  = document.getElementById('originalImg');
+    const simulatedImg = document.getElementById('simulatedImg');
+    const simPanelLabel= document.getElementById('simPanelLabel');
+    const simResultsBadge= document.getElementById('simResultsBadge');
+    const downloadBtn  = document.getElementById('downloadBtn');
+    const alertEl      = document.getElementById('simAlert');
+
+    // CVD option selection
+    document.querySelectorAll('.sim-cvd-opt').forEach(opt => {
+        opt.addEventListener('click', function () {
+            document.querySelectorAll('.sim-cvd-opt').forEach(o => o.classList.remove('selected'));
+            this.classList.add('selected');
+        });
+    });
+
+    // File input
+    imageInput.addEventListener('change', function () {
+        if (!this.files[0]) return;
+        const f = this.files[0];
+        simDrop.classList.add('has-file');
+        simDropMain.textContent = f.name;
+        simDropSub.textContent  = (f.size / 1024 / 1024).toFixed(1) + ' MB';
+        simDropIcon.style.color = 'var(--success)';
+        simDropIcon.innerHTML   = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>';
+        simulateBtn.disabled    = false;
+        const reader = new FileReader();
+        reader.onload = e => { originalImg.src = e.target.result; };
+        reader.readAsDataURL(f);
+    });
+
+    // Drag & drop
+    simDrop.addEventListener('dragover', e => { e.preventDefault(); simDrop.classList.add('dragover'); });
+    simDrop.addEventListener('dragleave', () => simDrop.classList.remove('dragover'));
+    simDrop.addEventListener('drop', e => {
+        e.preventDefault(); simDrop.classList.remove('dragover');
+        if (e.dataTransfer.files[0]) { imageInput.files = e.dataTransfer.files; imageInput.dispatchEvent(new Event('change')); }
+    });
+
+    // Submit
+    simulateBtn.addEventListener('click', async function () {
+        if (!imageInput.files[0]) return;
+        simulateBtn.disabled = true;
+        simBtnLabel.textContent = 'Processing…';
+        uploadState.style.display = 'none';
+        loadingState.classList.add('active');
+        alertEl.style.display = 'none';
+
+        const selectedOpt  = document.querySelector('.sim-cvd-opt.selected input');
+        const deficiency   = selectedOpt ? selectedOpt.value : 'protanopia';
+        const selectedName = document.querySelector('.sim-cvd-opt.selected .sim-cvd-name');
+        const cvdLabel     = selectedName ? selectedName.textContent : deficiency;
+
+        const formData = new FormData();
+        formData.append('image', imageInput.files[0]);
+        formData.append('deficiency', deficiency);
+
+        try {
+            const resp = await fetch('/simulator/process', { method: 'POST', body: formData });
+            if (!resp.ok) throw new Error('Server error ' + resp.status);
+            const blob = await resp.blob();
+            const url  = URL.createObjectURL(blob);
+            simulatedImg.src    = url;
+            downloadBtn.href    = url;
+            downloadBtn.style.display = 'inline-flex';
+            simPanelLabel.textContent   = 'As seen with ' + cvdLabel;
+            simResultsBadge.textContent = cvdLabel;
+            loadingState.classList.remove('active');
+            resultsState.classList.add('active');
+        } catch (err) {
+            loadingState.classList.remove('active');
+            uploadState.style.display = '';
+            alertEl.className  = 'alert alert-error';
+            alertEl.textContent = '✗ ' + err.message;
+            alertEl.style.display = 'flex';
+        } finally {
+            simulateBtn.disabled = false;
+            simBtnLabel.textContent = 'Simulate Vision';
+        }
+    });
+
+    document.getElementById('startOverBtn').addEventListener('click', function () {
+        resultsState.classList.remove('active');
+        uploadState.style.display = '';
+        simDrop.classList.remove('has-file');
+        simDropMain.textContent = 'Drop image here';
+        simDropSub.textContent  = 'JPG · PNG · WebP · up to 16 MB';
+        simDropIcon.style.color = '';
+        simDropIcon.innerHTML   = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
+        imageInput.value = '';
+        simulateBtn.disabled = true;
+    });
+
+    document.getElementById('compareToggle').addEventListener('click', function () {
+        const grid = document.getElementById('simCompareGrid');
+        const isComparing = grid.classList.contains('side-by-side');
+        if (isComparing) {
+            grid.classList.remove('side-by-side');
+            grid.classList.add('single');
+            this.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/></svg> Compare with Original';
+            this.setAttribute('aria-pressed', 'false');
+        } else {
+            grid.classList.remove('single');
+            grid.classList.add('side-by-side');
+            this.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg> Simulation Only';
+            this.setAttribute('aria-pressed', 'true');
+        }
+    });
+});
+</script>
+{% endblock %}

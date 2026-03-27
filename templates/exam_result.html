@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+{% block title %}ColorSight – Exam Results{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="breadcrumb">Exam Complete</div>
+    <h1>Examination Results</h1>
+    <p>Your adaptive color vision screening is complete. Full analysis below.</p>
+</div>
+
+<div style="max-width:920px;margin:0 auto;padding:0 1rem 4rem;">
+
+    {% if r.control_passed == false %}
+    <div class="alert alert-warning" style="margin-bottom:1.5rem;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <div><strong>Control Plate Failed</strong><br><span style="font-weight:400;">Results may be unreliable — check display brightness and consider retaking.</span></div>
+    </div>
+    {% endif %}
+
+    <!-- Result banner -->
+    <div class="card result-banner" style="border-left:4px solid {{ sev_info.color }};" data-reveal>
+        <div class="result-banner-inner">
+            <div class="result-badge-lg" style="background:{{ sev_info.color }};">{{ sev_info.icon }} {{ r.result }}</div>
+            <span class="sev-label" style="color:{{ sev_info.color }};">{{ sev_info.text }}</span>
+            <div class="result-stats-row">
+                <div class="rstat">
+                    <span class="rstat-val">{{ r.accuracy }}%</span>
+                    <span class="rstat-label">Accuracy</span>
+                </div>
+                <div class="rstat">
+                    <span class="rstat-val">{{ r.correct }}/{{ r.total }}</span>
+                    <span class="rstat-label">Correct</span>
+                </div>
+                <div class="rstat">
+                    <span class="rstat-val">{{ r.avg_time }}s</span>
+                    <span class="rstat-label">Avg Time</span>
+                </div>
+                <div class="rstat">
+                    <span class="rstat-val">{{ r.total_time }}s</span>
+                    <span class="rstat-label">Total</span>
+                </div>
+            </div>
+            <div class="result-meta-row">
+                {% if r.confusion_count > 0 %}
+                <span class="meta-chip">🎯 Confusion traps: {{ r.confusion_traps_fallen }}/{{ r.confusion_count }}{{ " triggered" if r.confusion_traps_fallen > 0 else " ✓ avoided" }}</span>
+                {% endif %}
+                {% if r.adapted_count > 0 %}
+                <span class="meta-chip">🔄 {{ r.adapted_count }} plate{{ "s" if r.adapted_count > 1 }} adapted</span>
+                {% endif %}
+                {% if r.control_passed %}
+                <span class="meta-chip">✓ Control passed</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Insights -->
+    {% set ta = r.time_analysis %}
+    {% if ta.slow_correct > 0 or ta.fast_wrong > 0 %}
+    <div class="card" data-reveal data-delay="80">
+        <h2>Response Time Insights</h2>
+        <div class="insight-items">
+            {% if ta.slow_correct > 0 %}
+            <div class="insight-item insight-warn">
+                <span class="insight-icon">🐢</span>
+                <div>
+                    <strong>{{ ta.slow_correct }} slow-but-correct answer{{ "s" if ta.slow_correct > 1 }}</strong>
+                    <p>You answered correctly but took noticeably longer than typical — this can indicate mild color confusion even when the symbol is eventually identified.</p>
+                </div>
+            </div>
+            {% endif %}
+            {% if ta.fast_wrong > 0 %}
+            <div class="insight-item insight-alert">
+                <span class="insight-icon">⚡</span>
+                <div>
+                    <strong>{{ ta.fast_wrong }} fast-but-wrong answer{{ "s" if ta.fast_wrong > 1 }}</strong>
+                    <p>Quick wrong responses suggest the plate genuinely looked different to you — a stronger CVD indicator than slow guessing.</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- CVD Risk -->
+    <div class="card" data-reveal data-delay="120">
+        <h2>CVD Risk Assessment</h2>
+        <p class="card-desc">Per-type risk based on weighted scoring across difficulty levels. Population prevalence shown for context.</p>
+        <div class="risk-bars">
+            {% for cvd_key, risk_val in r.cvd_risk.items() %}
+            {% set colors = {"protanopia":"#ef5350","deuteranopia":"#66bb6a","tritanopia":"#42a5f5","achromatopsia":"#78909c"} %}
+            {% set prev = prevalence[cvd_key] %}
+            <div class="risk-row">
+                <div class="risk-label">
+                    <span class="risk-dot" style="background:{{ colors[cvd_key] }};"></span>
+                    <span>
+                        {{ cvd_labels[cvd_key] }}
+                        <span class="prevalence-tag">{{ prev.male }}% M · {{ prev.female }}% F</span>
+                    </span>
+                </div>
+                <div class="risk-bar-track">
+                    <div class="risk-bar-fill" style="width:{{ risk_val }}%;background:{{ colors[cvd_key] }};"></div>
+                </div>
+                <span class="risk-pct {% if risk_val >= 50 %}risk-high{% elif risk_val >= 25 %}risk-med{% else %}risk-ok{% endif %}">{{ risk_val }}%</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Per-type detail cards -->
+    <div class="card" data-reveal data-delay="160">
+        <h2>Per-Type Breakdown</h2>
+        <div class="cvd-detail-cards">
+            {% for cvd_key, risk_val in r.cvd_risk.items() %}
+            {% set colors = {"protanopia":"#ef5350","deuteranopia":"#66bb6a","tritanopia":"#42a5f5","achromatopsia":"#78909c"} %}
+            {% set prev = prevalence[cvd_key] %}
+            {% set cvd_hist = [] %}
+            {% for h in r.diag_history %}{% if h.cvd == cvd_key %}{% if cvd_hist.append(h) %}{% endif %}{% endif %}{% endfor %}
+            <div class="cvd-detail-card" style="border-top-color:{{ colors[cvd_key] }};">
+                <h4>{{ cvd_labels[cvd_key].split(' ')[0] }}</h4>
+                <p class="cvd-desc">{{ prev.desc }}</p>
+                <div class="cvd-detail-risk {% if risk_val >= 50 %}risk-high{% elif risk_val >= 25 %}risk-med{% else %}risk-ok{% endif %}">{{ risk_val }}% risk</div>
+                <div class="cvd-detail-stats">
+                    {% set correct_n = cvd_hist|selectattr('correct')|list|length %}
+                    <span>{{ correct_n }}/{{ cvd_hist|length }} correct</span>
+                    <span>Pop. {{ prev.male }}% males</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Time chart -->
+    <div class="card" data-reveal data-delay="180">
+        <h2>Response Time Profile</h2>
+        <p class="card-desc">Time per plate — color indicates speed vs difficulty threshold.</p>
+        <div class="time-chart">
+            {% set max_time = ta.slowest if ta.slowest > 0 else 10 %}
+            {% for tq in ta.per_question %}
+            <div class="time-bar-col" title="Q{{ tq.qno }}: {{ tq.time }}s · {{ tq.cvd|capitalize }} {{ tq.difficulty }}">
+                <div class="time-bar-value">{{ tq.time }}s</div>
+                <div class="time-bar-fill {% if not tq.correct %}time-bar-wrong{% elif tq.time_class == 'slow' %}time-bar-slow{% elif tq.time_class == 'fast' %}time-bar-fast{% else %}time-bar-normal{% endif %}"
+                    style="height:{{ (tq.time / max_time * 100)|int }}%;"></div>
+                <div class="time-bar-label">{{ tq.qno }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="time-legend">
+            <span class="tl-item"><span class="tl-swatch time-bar-fast"></span> Fast</span>
+            <span class="tl-item"><span class="tl-swatch time-bar-normal"></span> Normal</span>
+            <span class="tl-item"><span class="tl-swatch time-bar-slow"></span> Slow</span>
+            <span class="tl-item"><span class="tl-swatch time-bar-wrong"></span> Wrong</span>
+        </div>
+    </div>
+
+    <!-- Difficulty breakdown -->
+    <div class="card" data-reveal data-delay="200">
+        <h2>Performance by Difficulty</h2>
+        <div class="diff-cards">
+            {% for dk, dv in r.diff_stats.items() %}
+            <div class="diff-card" style="border-top-color:{{ diff_colors[dk] }};">
+                <h4>{{ diff_labels[dk] }}</h4>
+                <div class="diff-ring">
+                    <svg width="76" height="76" viewBox="0 0 76 76">
+                        <circle cx="38" cy="38" r="32" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="6"/>
+                        <circle cx="38" cy="38" r="32" fill="none" stroke="{{ diff_colors[dk] }}" stroke-width="6"
+                            stroke-dasharray="{{ (dv.pct / 100 * 201.1)|round(1) }} 201.1"
+                            stroke-linecap="round" transform="rotate(-90 38 38)"/>
+                    </svg>
+                    <span class="diff-pct">{{ dv.pct }}%</span>
+                </div>
+                <p>{{ dv.correct }}/{{ dv.total }} correct</p>
+                <p class="diff-avg-time">⏱ avg {{ dv.avg_time }}s</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Explanation -->
+    <div class="card" data-reveal data-delay="220">
+        <h2>Understanding Your Results</h2>
+        <div class="result-explanation">
+            {% if r.result == "Normal Color Vision" %}
+            <p>You correctly identified symbols across all CVD types and difficulty levels. The control plate confirmed your display is functioning, and confusion plates did not mislead you. This indicates typical trichromatic color vision.</p>
+            {% elif "protanopia" in r.result.lower() %}
+            <p><strong>Protanopia</strong> affects L-cones (red-sensitive photoreceptors). Reds appear darker and are confused with greens and browns. Affects approximately 1.3% of males and 0.02% of females.</p>
+            {% elif "deuteranopia" in r.result.lower() %}
+            <p><strong>Deuteranopia</strong> affects M-cones (green-sensitive photoreceptors). This is the most common form of CVD (~5% of males). Greens appear brownish and are easily confused with reds.</p>
+            {% elif "tritanopia" in r.result.lower() %}
+            <p><strong>Tritanopia</strong> affects S-cones (blue-sensitive photoreceptors). Very rare (~0.01%). Blues appear greenish and yellows pinkish or light gray.</p>
+            {% elif "achromatopsia" in r.result.lower() %}
+            <p><strong>Achromatopsia</strong> (rod monochromacy) is total color blindness. Extremely rare (~0.003%). Only luminance differences are perceived — the world appears entirely in grayscale.</p>
+            {% endif %}
+            {% if r.severity == "mild" %}<p>Your <strong>mild</strong> result means you missed some harder plates or showed hesitation patterns on easier ones. Many people with mild CVD function well in daily life.</p>
+            {% elif r.severity == "moderate" %}<p>Your <strong>moderate</strong> result includes failures across difficulty levels. Consider consulting an eye care professional for formal assessment.</p>
+            {% elif r.severity == "strong" %}<p>Your <strong>strong</strong> result includes failures on easy diagnostic plates. We recommend consulting an ophthalmologist for a formal evaluation.</p>{% endif %}
+            {% if r.adapted_count > 0 %}<p>The adaptive engine redirected {{ r.adapted_count }} hard plate{{ "s" if r.adapted_count > 1 }} to focus on your weakest area, providing more diagnostic data.</p>{% endif %}
+        </div>
+    </div>
+
+    <!-- Question review -->
+    <div class="card" data-reveal data-delay="240">
+        <h2>Question-by-Question Review</h2>
+        <div class="review-table-wrap">
+            <table class="review-table">
+                <thead>
+                    <tr><th>#</th><th>Symbol</th><th>Answer</th><th>Result</th><th>Type</th><th>Difficulty</th><th>Time</th><th>Speed</th><th>Notes</th></tr>
+                </thead>
+                <tbody>
+                    {% for h in r.history %}
+                    <tr class="{% if h.correct %}row-correct{% else %}row-wrong{% endif %}">
+                        <td>{{ h.qno }}</td>
+                        <td class="symbol-cell">{{ h.symbol }}</td>
+                        <td class="symbol-cell">{{ h.answer }}</td>
+                        <td>{% if h.correct %}<span class="result-tag tag-correct">✓</span>{% else %}<span class="result-tag tag-wrong">✗</span>{% endif %}</td>
+                        <td style="font-size:0.8rem;">{% if h.is_control %}Control{% else %}{{ h.cvd|capitalize }}{% endif %}</td>
+                        <td><span class="diff-mini-badge" style="background:{{ diff_colors.get(h.difficulty,'#888') }}20;color:{{ diff_colors.get(h.difficulty,'#888') }};border:1px solid {{ diff_colors.get(h.difficulty,'#888') }}40;">{{ diff_labels.get(h.difficulty,h.difficulty)|capitalize }}</span></td>
+                        <td style="font-size:0.82rem;font-variant-numeric:tabular-nums;">{{ h.time }}s</td>
+                        <td>{% if h.get('time_class') == 'fast' %}<span class="speed-tag speed-fast">Fast</span>{% elif h.get('time_class') == 'slow' %}<span class="speed-tag speed-slow">Slow</span>{% else %}<span class="speed-tag speed-normal">Norm</span>{% endif %}</td>
+                        <td>
+                            {% if h.is_control %}<span class="note-tag note-ctrl">Ctrl</span>{% endif %}
+                            {% if h.is_confusion %}<span class="note-tag note-conf">Conf</span>{% endif %}
+                            {% if h.fell_for_trap %}<span class="note-tag note-trap">Trap</span>{% endif %}
+                            {% if h.get('adapted') %}<span class="note-tag note-adapt">Adapt</span>{% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="action-row" style="justify-content:center;" data-reveal data-delay="260">
+        <a href="/exam/report" class="btn btn-success btn-lg">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download PDF Report
+        </a>
+        <a href="/exam" class="btn btn-secondary btn-lg">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            Retake Exam
+        </a>
+        <a href="/simulator" class="btn btn-primary btn-lg">Try Simulator →</a>
+    </div>
+    <p class="disclaimer" style="text-align:center;margin-top:1rem;">Screening only — not a medical diagnosis. For formal evaluation, consult an ophthalmologist.</p>
+</div>
+{% endblock %}

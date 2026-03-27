@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}ColorSight – Page Not Found{% endblock %}
+
+{% block content %}
+<div class="error-page">
+    <div class="hero-blobs">
+        <div class="blob b1" style="opacity:0.2;"></div>
+        <div class="blob b2" style="opacity:0.15;"></div>
+    </div>
+    <div class="error-content">
+        <div class="error-visual">
+            <div class="err-circle err-c1"></div>
+            <div class="err-circle err-c2"></div>
+            <div class="err-circle err-c3"></div>
+            <div class="err-num">404</div>
+        </div>
+        <h1>Page Not Found</h1>
+        <p>This page has gone invisible — a bit like certain colors under achromatopsia.<br>Let's get you back to something you can see.</p>
+        <div class="error-links">
+            <a href="/" class="btn btn-primary btn-lg">← Back Home</a>
+            <a href="/exam/start" class="btn btn-secondary btn-lg">Start Vision Exam</a>
+            <a href="/simulator" class="btn btn-ghost btn-lg">Try Simulator</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ColorSight Suite{% endblock %}</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800;900&family=Noto+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    {% block head %}{% endblock %}
+</head>
+
+<body>
+    <canvas id="cs-bg-canvas"></canvas>
+
+    <nav class="navbar" id="csNavbar">
+        <a href="/" class="nav-brand">
+            <div class="brand-mark">
+                <span class="bm-ring"></span>
+                <span class="bm-dot"></span>
+            </div>
+            <span class="brand-name">ColorSight</span>
+            <span class="brand-tag">Suite</span>
+        </a>
+
+        <ul class="nav-links" id="navLinks">
+            <li><a href="/simulator" class="{% if request.path.startswith('/simulator') %}active{% endif %}">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                    </svg>
+                    Simulator
+                </a></li>
+            <li><a href="/generator" class="{% if request.path.startswith('/generator') %}active{% endif %}">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <circle cx="12" cy="12" r="4" />
+                    </svg>
+                    Generator
+                </a></li>
+            <li><a href="/exam" class="{% if request.path.startswith('/exam') %}active{% endif %}">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 11l3 3L22 4" />
+                        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+                    </svg>
+                    Vision Exam
+                </a></li>
+            <li><a href="/detector" class="{% if request.path.startswith('/detector') %}active{% endif %}">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8" />
+                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    </svg>
+                    Audit
+                </a></li>
+            <li><a href="/about" class="{% if request.path == '/about' %}active{% endif %}">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                    </svg>
+                    About
+                </a></li>
+        </ul>
+
+        <a href="/exam/start" class="nav-cta">Start Exam</a>
+
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-left">
+                <div class="footer-brand">
+                    <div class="brand-mark sm">
+                        <span class="bm-ring"></span>
+                        <span class="bm-dot"></span>
+                    </div>
+                    ColorSight Suite
+                </div>
+                <p class="footer-note">For educational &amp; screening purposes only. Not a medical diagnosis.</p>
+            </div>
+            <nav class="footer-nav">
+                <div class="fn-col">
+                    <span class="fn-head">Tools</span>
+                    <a href="/simulator">Simulator</a>
+                    <a href="/generator">Generator</a>
+                    <a href="/exam">Vision Exam</a>
+                    <a href="/detector">Accessibility Audit</a>
+                </div>
+                <div class="fn-col">
+                    <span class="fn-head">Learn</span>
+                    <a href="/about">About CVD</a>
+                    <a href="/about#science">The Science</a>
+                    <a href="/about#wcag">WCAG Standards</a>
+                </div>
+            </nav>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2026 ColorSight Suite</span>
+            <span class="footer-divider">·</span>
+            <span>Built for color vision accessibility</span>
+        </div>
+    </footer>
+
+    <script>
+        (function () {
+            var canvas = document.getElementById('cs-bg-canvas');
+            if (!canvas) return;
+            var ctx = canvas.getContext('2d'), W, H;
+            function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+            resize(); window.addEventListener('resize', resize);
+            var COLORS = ['#06B6D4', '#8B5CF6', '#0891B2', '#7C3AED', '#0E7490'];
+            function P() { this.reset(true); }
+            P.prototype.reset = function (i) { this.x = Math.random() * W; this.y = i ? Math.random() * H : H + 10; this.vy = -(Math.random() * 0.3 + 0.06); this.vx = (Math.random() - 0.5) * 0.12; this.r = Math.random() * 1.2 + 0.3; this.alpha = Math.random() * 0.35 + 0.06; this.color = COLORS[Math.floor(Math.random() * COLORS.length)]; };
+            P.prototype.update = function () { this.x += this.vx; this.y += this.vy; if (this.y < -10) this.reset(false); };
+            P.prototype.draw = function () { ctx.globalAlpha = this.alpha; ctx.fillStyle = this.color; ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2); ctx.fill(); };
+            var ps = []; for (var i = 0; i < 80; i++)ps.push(new P());
+            function loop() { ctx.clearRect(0, 0, W, H); ps.forEach(function (p) { p.update(); p.draw(); }); requestAnimationFrame(loop); }
+            loop();
+        })();
+        window.addEventListener('scroll', function () {
+            var nav = document.getElementById('csNavbar'); if (!nav) return;
+            nav.classList.toggle('scrolled', window.scrollY > 50);
+        });
+        document.getElementById('navToggle').addEventListener('click', function () {
+            document.getElementById('navLinks').classList.toggle('open');
+            this.classList.toggle('open');
+        });
+        document.addEventListener('DOMContentLoaded', function () {
+            var els = document.querySelectorAll('[data-reveal]'); if (!els.length) return;
+            var io = new IntersectionObserver(function (entries) {
+                entries.forEach(function (e) {
+                    if (e.isIntersecting) { var el = e.target, d = parseInt(el.getAttribute('data-delay') || 0); setTimeout(function () { el.classList.add('revealed'); }, d); io.unobserve(el); }
+                });
+            }, { threshold: 0.1 });
+            els.forEach(function (el) { io.observe(el); });
+        });
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+
+</html>

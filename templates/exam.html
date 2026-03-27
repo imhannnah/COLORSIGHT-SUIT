@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% block title %}ColorSight – Plate {{ qno }}{% endblock %}
+
+{% block content %}
+{% if prev_feedback %}
+<div id="feedbackOverlay" class="feedback-overlay {{ 'fb-correct' if prev_feedback.correct else 'fb-wrong' }}">
+    <div class="feedback-inner">
+        {% if prev_feedback.correct %}
+        <span class="fb-icon">✓</span>
+        <span class="fb-text">Correct!</span>
+        {% else %}
+        <span class="fb-icon">✗</span>
+        <span class="fb-text">Was <strong>{{ prev_feedback.symbol }}</strong></span>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<div class="exam-session">
+
+    <!-- Top bar -->
+    <div class="exam-session-bar">
+        <span class="exam-plate-badge">PLATE {{ qno }} / {{ total }}</span>
+        <div class="exam-badges">
+            {% if is_control %}
+            <span class="diff-badge" style="background:rgba(99,102,241,0.2);color:#A5B4FC;border:1px solid rgba(99,102,241,0.3);">Control</span>
+            {% else %}
+            <span class="diff-badge" style="background:{{ diff_color }}22;color:{{ diff_color }};border:1px solid {{ diff_color }}44;">{{ diff_label }}</span>
+            {% endif %}
+            {% if is_adapted %}
+            <span class="diff-badge" style="background:rgba(139,92,246,0.12);color:#C4B5FD;border:1px solid rgba(139,92,246,0.25);">Adapted</span>
+            {% endif %}
+        </div>
+        <span class="exam-timer" id="timerBadge">0.0s</span>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="exam-progress-track">
+        <div class="exam-progress-fill" style="width:{{ ((qno - 1) / total * 100)|int }}%;"></div>
+    </div>
+
+    <!-- Step dots -->
+    <div class="exam-dots" role="navigation" aria-label="Exam progress">
+        {% for dot in dot_states %}
+        {% if dot == 'correct' %}
+        <div class="exam-dot done-correct" title="Plate {{ loop.index }}: Correct" aria-label="Plate {{ loop.index }} correct">✓</div>
+        {% else %}
+        <div class="exam-dot done-wrong" title="Plate {{ loop.index }}: Wrong" aria-label="Plate {{ loop.index }} wrong">✗</div>
+        {% endif %}
+        {% endfor %}
+        <div class="exam-dot current" aria-current="step">{{ dot_states|length + 1 }}</div>
+        {% for i in range(dot_states|length + 1, total) %}
+        <div class="exam-dot" aria-label="Plate {{ i + 1 }} pending">{{ i + 1 }}</div>
+        {% endfor %}
+    </div>
+
+    {% if is_control %}
+    <div class="exam-control-hint">
+        This is a <strong>control plate</strong> — everyone with typical vision should see the symbol clearly.
+    </div>
+    {% endif %}
+
+    <!-- Plate -->
+    <div class="exam-plate-wrap">
+        <div class="exam-plate-content">
+            {{ svg | safe }}
+        </div>
+    </div>
+
+    <!-- Question -->
+    <p class="exam-question-label" id="examQuestionLabel">What symbol do you see?</p>
+
+    <!-- Choices -->
+    <form method="POST" id="examForm" aria-labelledby="examQuestionLabel">
+        <input type="hidden" name="answer" id="answerInput" value="">
+        <input type="hidden" name="resp_time" id="respTimeInput" value="0">
+
+        <div class="exam-choice-grid" role="group" aria-label="Symbol choices">
+            {% for ch in choices %}
+            <button type="button"
+                class="exam-choice-btn {% if ch == '?' %}choice-cant{% endif %}"
+                data-value="{{ ch }}"
+                data-key="{{ loop.index }}"
+                onclick="selectAnswer(this, '{{ ch }}')"
+                aria-label="{% if ch == '?' %}I can't see anything{% else %}Symbol {{ ch }}{% endif %}">
+                <span class="exam-key-hint" aria-hidden="true">{{ loop.index }}</span>
+                {% if ch == '?' %}Can't see{% else %}{{ ch }}{% endif %}
+            </button>
+            {% endfor %}
+        </div>
+
+        <div class="exam-submit-row">
+            <button type="submit" class="btn btn-primary btn-lg" id="submitBtn" disabled
+                style="min-width:220px;" aria-live="polite">
+                Next Plate
+                <span style="font-family:var(--font-mono);font-size:0.72rem;opacity:0.6;margin-left:8px;">Enter ↵</span>
+            </button>
+            <span class="exam-shortcut-hint">Keys 1–{{ choices|length }} to select &nbsp;·&nbsp; Enter to confirm</span>
+        </div>
+    </form>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Force navbar to show solid background on exam page (no hero to scroll past)
+    (function() {
+        var nav = document.getElementById('csNavbar');
+        if (nav) nav.classList.add('scrolled');
+    })();
+
+    let startTime = performance.now();
+    const timerEl = document.getElementById('timerBadge');
+    const timerInterval = setInterval(() => {
+        timerEl.textContent = ((performance.now() - startTime) / 1000).toFixed(1) + 's';
+    }, 100);
+
+    const fb = document.getElementById('feedbackOverlay');
+    if (fb) {
+        fb.style.display = 'flex';
+        setTimeout(() => fb.classList.add('fb-fade'), 600);
+        setTimeout(() => { fb.style.display = 'none'; fb.classList.remove('fb-fade'); }, 1200);
+    }
+
+    function selectAnswer(btn, val) {
+        document.querySelectorAll('.exam-choice-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        document.getElementById('answerInput').value = val;
+        document.getElementById('submitBtn').disabled = false;
+    }
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key >= '1' && e.key <= '9') {
+            const idx = parseInt(e.key);
+            const btns = document.querySelectorAll('.exam-choice-btn');
+            if (idx <= btns.length) selectAnswer(btns[idx - 1], btns[idx - 1].dataset.value);
+        }
+        if (e.key === 'Enter' && !document.getElementById('submitBtn').disabled) {
+            e.preventDefault();
+            clearInterval(timerInterval);
+            document.getElementById('respTimeInput').value = ((performance.now() - startTime) / 1000).toFixed(1);
+            document.getElementById('examForm').submit();
+        }
+    });
+
+    document.getElementById('examForm').addEventListener('submit', function () {
+        clearInterval(timerInterval);
+        document.getElementById('respTimeInput').value = ((performance.now() - startTime) / 1000).toFixed(1);
+    });
+</script>
+{% endblock %}

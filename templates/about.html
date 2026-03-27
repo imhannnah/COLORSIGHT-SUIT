@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+{% block title %}ColorSight – About Color Vision Deficiency{% endblock %}
+
+{% block content %}
+<div class="about-hero" data-reveal>
+    <div class="about-breadcrumb">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="12" cy="12" r="10" />
+            <circle cx="12" cy="12" r="3" fill="currentColor" />
+        </svg>
+        Science & Accessibility
+    </div>
+    <h1 class="about-title">Understanding Color<br>Vision Deficiency</h1>
+    <p class="about-lead">ColorSight Suite exists because 300 million people experience the world with different color
+        perception — and most digital interfaces are designed without them in mind.</p>
+</div>
+
+<div class="about-content">
+
+    <!-- Stats -->
+    <div class="about-stats-row" data-reveal>
+        <div class="astat-card">
+            <div class="astat-n" style="color:var(--primary);">300M+</div>
+            <div class="astat-l">People worldwide with CVD</div>
+        </div>
+        <div class="astat-card">
+            <div class="astat-n" style="color:var(--warning);">4 Major</div>
+            <div class="astat-l">Types of CVD Conditions</div>
+        </div>
+        <div class="astat-card">
+            <div class="astat-n" style="color:var(--success);">8%</div>
+            <div class="astat-l">Of male population, some form</div>
+        </div>
+        <div class="astat-card">
+            <div class="astat-n" style="color:var(--danger);">0.5%</div>
+            <div class="astat-l">Of female population affected</div>
+        </div>
+    </div>
+
+    <!-- What is CVD -->
+    <div class="about-grid" data-reveal id="science">
+        <div>
+            <h2 class="about-section-title">What is Color Vision Deficiency?</h2>
+            <div class="about-body">
+                <p>Color Vision Deficiency (CVD), commonly called "color blindness," is a condition where the eyes
+                    perceive colors differently than typical trichromatic vision. It is almost always inherited, carried
+                    on the X chromosome, which explains why it affects far more males than females.</p>
+                <p>The human eye contains three types of cone photoreceptors — L (red-sensitive), M (green-sensitive),
+                    and S (blue-sensitive). In CVD, one or more of these cone types is absent, reduced in quantity, or
+                    shifted in spectral sensitivity.</p>
+                <p>Most forms of CVD are not "seeing in black and white" — instead, certain colors appear similar or
+                    identical. A protanope sees red as dark gray or near-black. A deuteranope confuses reds and greens.
+                    This has significant implications for any color-coded interface.</p>
+                <p><strong>CVD is not a disease</strong> — it is a variation in visual perception. But it does mean that
+                    color-only information cues (red = bad, green = good) completely fail for a substantial portion of
+                    your users.</p>
+            </div>
+        </div>
+        <div>
+            <h3
+                style="font-family:var(--font-h);font-size:1.1rem;font-weight:700;margin-bottom:1rem;color:var(--white);">
+                The four primary types</h3>
+            <div class="cvd-types-grid">
+                <div class="cvd-type-item cti-1">
+                    <h4>Protanopia</h4>
+                    <div class="cti-pct">~1.3% males · 0.02% females</div>
+                    <p>L-cones absent. Reds appear dark or brownish. Red-green confusion is severe.</p>
+                </div>
+                <div class="cvd-type-item cti-2">
+                    <h4>Deuteranopia</h4>
+                    <div class="cti-pct">~5.0% males · 0.35% females</div>
+                    <p>M-cones absent. Most common CVD. Greens appear brown, confused with reds.</p>
+                </div>
+                <div class="cvd-type-item cti-3">
+                    <h4>Tritanopia</h4>
+                    <div class="cti-pct">~0.01% all genders</div>
+                    <p>S-cones absent. Very rare. Blues appear greenish, yellows pinkish or gray.</p>
+                </div>
+                <div class="cvd-type-item cti-4">
+                    <h4>Achromatopsia</h4>
+                    <div class="cti-pct">~0.003% all genders</div>
+                    <p>Total color blindness. Only luminance differences are perceived. Extremely rare.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div
+        style="height:1px;background:linear-gradient(to right,transparent,var(--border2),transparent);margin:1rem 0 3rem;">
+    </div>
+
+    <!-- WCAG Standards -->
+    <div id="wcag" data-reveal>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start;">
+            <div>
+                <h2 class="about-section-title">WCAG 2.1 Contrast Standards</h2>
+                <div class="about-body">
+                    <p>The Web Content Accessibility Guidelines (WCAG) define contrast ratios that text and interactive
+                        elements must meet to be legible to people with low vision or CVD.</p>
+                    <p>Contrast ratio is calculated from the relative luminance of two colors. A ratio of 21:1 is black
+                        on white (maximum). A ratio of 1:1 is identical colors (invisible).</p>
+                    <p><strong>WCAG 2.1 Level AA</strong> is the legal minimum in many jurisdictions. <strong>Level
+                            AAA</strong> is the enhanced target for critical interfaces.</p>
+                </div>
+                <div class="wcag-wrapper">
+                    <table class="wcag-table">
+                        <thead>
+                            <tr>
+                                <th>Level</th>
+                                <th>Text</th>
+                                <th>Large Text</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="wcag-badge w-aa">AA</span></td>
+                                <td class="wl">≥ 4.5:1</td>
+                                <td class="wl">≥ 3:1</td>
+                            </tr>
+                            <tr>
+                                <td><span class="wcag-badge w-aaa">AAA</span></td>
+                                <td class="wl">≥ 7:1</td>
+                                <td class="wl">≥ 4.5:1</td>
+                            </tr>
+                            <tr>
+                                <td style="color:var(--muted);font-size:0.82rem;" colspan="3">Large text = 18pt or 14pt
+                                    bold. UI components need ≥ 3:1.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div>
+                <h2 class="about-section-title">CVD-Safe Design Principles</h2>
+                <div class="about-body">
+                    <p><strong>Never use color as the only information channel.</strong> Always pair color with shape,
+                        pattern, text label, or icon. "Red = error" alone fails for 8% of males.</p>
+                    <p><strong>Test with simulation.</strong> Use the ColorSight Simulator to see how your design looks
+                        under each CVD type before shipping.</p>
+                    <p><strong>Use the Wong palette.</strong> This 8-color palette (2011) is optimized to remain
+                        distinguishable under all major CVD types and for typical trichromatic vision.</p>
+                    <p><strong>Maintain luminance contrast.</strong> Even if hue information is lost, sufficient
+                        luminance difference preserves readability across all CVD types.</p>
+                    <p><strong>Avoid red/green pairs</strong> for critical information — together they affect ~6.3% of
+                        males. Use blue/orange as an accessible alternative.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="height:1px;background:linear-gradient(to right,transparent,var(--border2),transparent);margin:3rem 0;">
+    </div>
+
+    <!-- Tools -->
+    <div data-reveal>
+        <h2 class="about-section-title" style="text-align:center;">ColorSight Suite Tools</h2>
+        <p style="text-align:center;color:var(--muted);margin-bottom:2rem;">Four modules to help you understand, test,
+            and design for color vision accessibility.</p>
+        <div class="tools-showcase">
+            <a href="/simulator" class="tool-item">
+                <div class="tool-item-icon">👁️</div>
+                <div>
+                    <h4>Color Blindness Simulator</h4>
+                    <p>Upload any image and visualize it under Protanopia, Deuteranopia, Tritanopia, and Achromatopsia.
+                    </p>
+                </div>
+            </a>
+            <a href="/generator" class="tool-item">
+                <div class="tool-item-icon">⊚</div>
+                <div>
+                    <h4>Ishihara Plate Generator</h4>
+                    <p>Create custom CVD-targeted test plates with clinical color science. Download SVG, PNG, or JPG.
+                    </p>
+                </div>
+            </a>
+            <a href="/exam" class="tool-item">
+                <div class="tool-item-icon">📋</div>
+                <div>
+                    <h4>Adaptive Vision Exam</h4>
+                    <p>13-plate adaptive Ishihara screening with response time analysis and PDF report.</p>
+                </div>
+            </a>
+            <a href="/detector" class="tool-item">
+                <div class="tool-item-icon">🔍</div>
+                <div>
+                    <h4>Accessibility Audit</h4>
+                    <p>Detect WCAG failures, CVD color merges, red-green reliance, and get fix suggestions.</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+</div>
+
+<!-- CTA -->
+<div class="about-cta" data-reveal>
+    <h2>Start with a free vision screening</h2>
+    <p>The adaptive exam takes under 60 seconds and gives you a detailed CVD risk assessment.</p>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+        <a href="/exam/start" class="btn btn-primary btn-lg">Begin Exam →</a>
+        <a href="/detector" class="btn btn-secondary btn-lg">Audit a Design</a>
+    </div>
+</div>
+{% endblock %}

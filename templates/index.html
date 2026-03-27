@@ -1,0 +1,459 @@
+{% extends "base.html" %}
+{% block title %}ColorSight Suite – See Beyond Color{% endblock %}
+
+{% block content %}
+<!-- ════ HERO ════ -->
+<section class="hero">
+    <div class="hero-blobs">
+        <div class="blob b1"></div>
+        <div class="blob b2"></div>
+        <div class="blob b3"></div>
+        <div class="blob b4"></div>
+    </div>
+    <div class="hero-content">
+        <div class="hero-eyebrow">
+            <span class="eyebrow-dot"></span>
+            Color Vision Accessibility Suite
+        </div>
+        <h1 class="hero-title">
+            See the world through<br>
+            <em class="hero-em">every set of eyes</em>
+        </h1>
+        <p class="hero-sub">
+            Simulate color blindness, generate Ishihara test plates, run clinical-grade vision exams,
+            and audit your designs — all in one powerful suite.
+        </p>
+        <div class="hero-actions">
+            <a href="/exam" class="btn-hero btn-primary-hero" aria-label="Start Vision Exam">Start Vision Exam →</a>
+            <a href="/simulator" class="btn-hero btn-ghost-hero" aria-label="Try Simulator">Try Simulator</a>
+        </div>
+        <div class="hero-stats">
+            <div class="hstat"><span class="hstat-n">300M+</span><span class="hstat-l">People with CVD Worldwide</span>
+            </div>
+            <div class="hstat-div"></div>
+            <div class="hstat"><span class="hstat-n">4 Major</span><span class="hstat-l">CVD Types</span></div>
+            <div class="hstat-div"></div>
+            <div class="hstat"><span class="hstat-n">WCAG 2.1</span><span class="hstat-l">Contrast Standards</span>
+            </div>
+            <div class="hstat-div"></div>
+            <div class="hstat"><span class="hstat-n">&lt;60s</span><span class="hstat-l">Full Screening Time</span>
+            </div>
+        </div>
+    </div>
+    <div class="scroll-hint">
+        <span>Scroll</span>
+        <div class="scroll-line"></div>
+    </div>
+</section>
+
+<!-- ════ MODULES ════ -->
+<section class="modules-section" id="modules">
+    <div class="section-wrap">
+        <div class="sec-header" data-reveal>
+            <div class="sec-label">Tools &amp; Features</div>
+            <h2 class="sec-title">Four powerful modules.<br>One unified suite.</h2>
+            <p class="sec-desc">Everything you need to understand, test, and design for color vision deficiency.</p>
+        </div>
+        <div class="mod-grid">
+            <a href="/simulator" class="mod-card card-r" data-reveal data-delay="0">
+                <div class="mod-num">01 — Simulator</div>
+                <div class="mod-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M15.4 15.4L18 18"></path>
+                        <path d="M8.6 15.4L6 18"></path>
+                    </svg>
+                </div>
+                <h3>Color Blindness Simulator</h3>
+                <p>Upload any image and instantly visualize how it appears under different CVD types.</p>
+                <div class="mod-cta" aria-hidden="true">Launch Simulator <span class="arrow">→</span></div>
+            </a>
+            <a href="/generator" class="mod-card card-y" data-reveal data-delay="80">
+                <div class="mod-num">02 — Generator</div>
+                <div class="mod-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                </div>
+                <h3>Ishihara Plate Generator</h3>
+                <p>Create custom test plates with any symbol or number for clinical or educational use.</p>
+                <div class="mod-cta" aria-hidden="true">Create Plate <span class="arrow">→</span></div>
+            </a>
+            <a href="/exam" class="mod-card card-g" data-reveal data-delay="160">
+                <div class="mod-num">03 — Examination</div>
+                <div class="mod-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18">
+                        </path>
+                    </svg>
+                </div>
+                <h3>Color Vision Examination</h3>
+                <p>Take a 13-plate adaptive screening with CVD-validated palettes. Get a full PDF report.</p>
+                <div class="mod-cta" aria-hidden="true">Start Exam <span class="arrow">→</span></div>
+            </a>
+            <a href="/detector" class="mod-card card-b" data-reveal data-delay="240">
+                <div class="mod-num">04 — Audit</div>
+                <div class="mod-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </div>
+                <h3>Accessibility Audit</h3>
+                <p>Detect color-dependent elements and verify WCAG contrast ratios in your designs.</p>
+                <div class="mod-cta" aria-hidden="true">Audit Design <span class="arrow">→</span></div>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ════ CVD TYPES ════ -->
+<section class="v2-cvd-section" id="cvd">
+    <div class="section-wrap">
+        <div class="v2-sec-header" data-reveal>
+            <span class="v2-sec-eyebrow">Color Vision Deficiency</span>
+            <h2 class="v2-sec-title">Understanding the spectrum</h2>
+            <p class="v2-sec-sub">Over <strong>300 million people</strong> experience some form of CVD worldwide — 1 in 12 males are affected.</p>
+        </div>
+
+        <div class="v2-cvd-grid">
+
+            <!-- Protanopia -->
+            <div class="v2-cvd-card" data-reveal data-delay="0" style="--accent-c:#EF4444;--accent-dim:rgba(239,68,68,0.1);">
+                <div class="v2-cvd-index">01</div>
+                <div class="v2-cvd-header">
+                    <div class="v2-cvd-dot" style="background:#EF4444;"></div>
+                    <div>
+                        <h3 class="v2-cvd-name">Protanopia</h3>
+                        <div class="v2-cvd-type">Red-blind · L-cone absent</div>
+                    </div>
+                    <div class="v2-cvd-stat">1.3%<span>males</span></div>
+                </div>
+                <p class="v2-cvd-desc">Red appears dark or brownish, making red-green distinctions nearly impossible. Traffic lights and warning signals are significantly affected.</p>
+                <div class="v2-swatch-strip">
+                    <div class="v2-swatch-group">
+                        <span style="background:#EF4444;" title="Red"></span>
+                        <span style="background:#F97316;" title="Orange"></span>
+                        <span style="background:#84CC16;" title="Yellow-green"></span>
+                        <span style="background:#22C55E;" title="Green"></span>
+                    </div>
+                    <div class="v2-swatch-arrow">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </div>
+                    <div class="v2-swatch-group">
+                        <span style="background:#4B4B22;" title="Red seen as dark olive"></span>
+                        <span style="background:#888820;" title="Orange seen as olive"></span>
+                        <span style="background:#80A020;" title="Yellow-green unchanged"></span>
+                        <span style="background:#5A9030;" title="Green, shifted"></span>
+                    </div>
+                </div>
+                <div class="v2-cvd-bar-row">
+                    <div class="v2-cvd-track"><div class="cvd-fill" data-width="26" style="background:#EF4444;width:0%;height:100%;border-radius:100px;transition:width 1.2s cubic-bezier(0.16,1,0.3,1);"></div></div>
+                    <span class="v2-cvd-bar-val">26% of CVD cases</span>
+                </div>
+            </div>
+
+            <!-- Deuteranopia -->
+            <div class="v2-cvd-card" data-reveal data-delay="80" style="--accent-c:#10B981;--accent-dim:rgba(16,185,129,0.1);">
+                <div class="v2-cvd-index">02</div>
+                <div class="v2-cvd-header">
+                    <div class="v2-cvd-dot" style="background:#10B981;"></div>
+                    <div>
+                        <h3 class="v2-cvd-name">Deuteranopia</h3>
+                        <div class="v2-cvd-type">Green-blind · M-cone absent</div>
+                    </div>
+                    <div class="v2-cvd-stat">5.0%<span>males</span></div>
+                </div>
+                <p class="v2-cvd-desc">The most common CVD. Green shades appear brownish-tan and are confused with reds. UI success/error states are frequently indistinguishable.</p>
+                <div class="v2-swatch-strip">
+                    <div class="v2-swatch-group">
+                        <span style="background:#10B981;" title="Green"></span>
+                        <span style="background:#34D399;" title="Light green"></span>
+                        <span style="background:#EF4444;" title="Red"></span>
+                        <span style="background:#F97316;" title="Orange"></span>
+                    </div>
+                    <div class="v2-swatch-arrow">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </div>
+                    <div class="v2-swatch-group">
+                        <span style="background:#857A2A;" title="Green seen as tan"></span>
+                        <span style="background:#9B9030;" title="Light green, dulled"></span>
+                        <span style="background:#7A6820;" title="Red seen as brownish"></span>
+                        <span style="background:#857230;" title="Orange, muddled"></span>
+                    </div>
+                </div>
+                <div class="v2-cvd-bar-row">
+                    <div class="v2-cvd-track"><div class="cvd-fill" data-width="100" style="background:#10B981;width:0%;height:100%;border-radius:100px;transition:width 1.2s cubic-bezier(0.16,1,0.3,1);"></div></div>
+                    <span class="v2-cvd-bar-val">Most common type</span>
+                </div>
+            </div>
+
+            <!-- Tritanopia -->
+            <div class="v2-cvd-card" data-reveal data-delay="160" style="--accent-c:#06B6D4;--accent-dim:rgba(6,182,212,0.1);">
+                <div class="v2-cvd-index">03</div>
+                <div class="v2-cvd-header">
+                    <div class="v2-cvd-dot" style="background:#06B6D4;"></div>
+                    <div>
+                        <h3 class="v2-cvd-name">Tritanopia</h3>
+                        <div class="v2-cvd-type">Blue-blind · S-cone absent</div>
+                    </div>
+                    <div class="v2-cvd-stat">0.01%<span>all</span></div>
+                </div>
+                <p class="v2-cvd-desc">Blue appears greenish and yellow looks pink or light gray. Very rare. Blue-yellow pairings in UIs are safe for red-green CVD but fail here.</p>
+                <div class="v2-swatch-strip">
+                    <div class="v2-swatch-group">
+                        <span style="background:#3B82F6;" title="Blue"></span>
+                        <span style="background:#FBBF24;" title="Yellow"></span>
+                        <span style="background:#8B5CF6;" title="Purple"></span>
+                        <span style="background:#06B6D4;" title="Cyan"></span>
+                    </div>
+                    <div class="v2-swatch-arrow">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </div>
+                    <div class="v2-swatch-group">
+                        <span style="background:#40B890;" title="Blue seen as teal"></span>
+                        <span style="background:#E8A0B0;" title="Yellow seen as pink"></span>
+                        <span style="background:#A07080;" title="Purple, muted"></span>
+                        <span style="background:#60C8A0;" title="Cyan, green-shifted"></span>
+                    </div>
+                </div>
+                <div class="v2-cvd-bar-row">
+                    <div class="v2-cvd-track"><div class="cvd-fill" data-width="6" style="background:#06B6D4;width:0%;height:100%;border-radius:100px;transition:width 1.2s cubic-bezier(0.16,1,0.3,1);"></div></div>
+                    <span class="v2-cvd-bar-val">6% of CVD cases</span>
+                </div>
+            </div>
+
+            <!-- Achromatopsia -->
+            <div class="v2-cvd-card" data-reveal data-delay="240" style="--accent-c:#94A3B8;--accent-dim:rgba(148,163,184,0.1);">
+                <div class="v2-cvd-index">04</div>
+                <div class="v2-cvd-header">
+                    <div class="v2-cvd-dot" style="background:linear-gradient(135deg,#94A3B8,#475569);"></div>
+                    <div>
+                        <h3 class="v2-cvd-name">Achromatopsia</h3>
+                        <div class="v2-cvd-type">Total color blind · No cones</div>
+                    </div>
+                    <div class="v2-cvd-stat">0.003%<span>all</span></div>
+                </div>
+                <p class="v2-cvd-desc">Complete absence of color perception. Only luminance differences remain. Every hue collapses into a shade of gray — the world is entirely monochrome.</p>
+                <div class="v2-swatch-strip">
+                    <div class="v2-swatch-group">
+                        <span style="background:#EF4444;"></span>
+                        <span style="background:#10B981;"></span>
+                        <span style="background:#3B82F6;"></span>
+                        <span style="background:#FBBF24;"></span>
+                    </div>
+                    <div class="v2-swatch-arrow">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </div>
+                    <div class="v2-swatch-group">
+                        <span style="background:#787878;"></span>
+                        <span style="background:#888888;"></span>
+                        <span style="background:#707070;"></span>
+                        <span style="background:#989898;"></span>
+                    </div>
+                </div>
+                <div class="v2-cvd-bar-row">
+                    <div class="v2-cvd-track"><div class="cvd-fill" data-width="2" style="background:#94A3B8;width:0%;height:100%;border-radius:100px;transition:width 1.2s cubic-bezier(0.16,1,0.3,1);"></div></div>
+                    <span class="v2-cvd-bar-val">Rarest form</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ════ HOW IT WORKS ════ -->
+<section class="v2-how-section" id="how">
+    <div class="section-wrap">
+        <div class="v2-sec-header" data-reveal>
+            <span class="v2-sec-eyebrow">Workflow</span>
+            <h2 class="v2-sec-title">Simple. Precise. Insightful.</h2>
+            <p class="v2-sec-sub">From upload to actionable insights in under a minute.</p>
+        </div>
+
+        <div class="v2-how-grid">
+
+            <div class="v2-how-card" data-reveal data-delay="0">
+                <div class="v2-how-bg-num">01</div>
+                <div class="v2-how-top">
+                    <div class="v2-how-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                            <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+                            <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+                            <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+                            <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+                        </svg>
+                    </div>
+                    <span class="v2-how-step-label">Step 1</span>
+                </div>
+                <h3 class="v2-how-title">Choose a Module</h3>
+                <p class="v2-how-desc">Pick from Simulator, Plate Generator, Vision Exam, or Accessibility Audit — each purpose-built for a specific workflow.</p>
+                <div class="v2-how-tags">
+                    <span>Simulator</span><span>Generator</span><span>Exam</span><span>Audit</span>
+                </div>
+            </div>
+
+            <div class="v2-how-connector" aria-hidden="true">
+                <div class="v2-how-line"></div>
+                <svg class="v2-how-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="9 18 15 12 9 6"/>
+                </svg>
+            </div>
+
+            <div class="v2-how-card" data-reveal data-delay="150">
+                <div class="v2-how-bg-num">02</div>
+                <div class="v2-how-top">
+                    <div class="v2-how-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                    </div>
+                    <span class="v2-how-step-label">Step 2</span>
+                </div>
+                <h3 class="v2-how-title">Upload or Configure</h3>
+                <p class="v2-how-desc">Upload your image or design, or configure test parameters. Everything runs server-side — no data is ever stored.</p>
+                <div class="v2-how-tags">
+                    <span>JPG · PNG · WebP</span><span>Privacy First</span>
+                </div>
+            </div>
+
+            <div class="v2-how-connector" aria-hidden="true">
+                <div class="v2-how-line"></div>
+                <svg class="v2-how-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="9 18 15 12 9 6"/>
+                </svg>
+            </div>
+
+            <div class="v2-how-card" data-reveal data-delay="300">
+                <div class="v2-how-bg-num">03</div>
+                <div class="v2-how-top">
+                    <div class="v2-how-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                        </svg>
+                    </div>
+                    <span class="v2-how-step-label">Step 3</span>
+                </div>
+                <h3 class="v2-how-title">Get Your Results</h3>
+                <p class="v2-how-desc">Receive visual comparisons, clinical-grade scores, downloadable PDF reports, and actionable WCAG recommendations instantly.</p>
+                <div class="v2-how-tags">
+                    <span>PDF Report</span><span>WCAG 2.1</span><span>Instant</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ════ CTA ════ -->
+<section class="v2-cta-section">
+    <div class="v2-cta-inner">
+
+        <div class="v2-cta-dots" aria-hidden="true">
+            <div class="v2-dot-grid" id="ctaDotGrid"></div>
+        </div>
+
+        <div class="v2-cta-content" data-reveal>
+            <span class="v2-cta-eyebrow">Free · No Account Needed</span>
+            <h2 class="v2-cta-title">Ready to see the world<br><em class="v2-cta-em">differently?</em></h2>
+            <p class="v2-cta-sub">Join thousands of designers, clinicians, and researchers who use ColorSight Suite for color vision accessibility.</p>
+
+            <div class="v2-cta-stats">
+                <div class="v2-cta-stat">
+                    <span class="v2-cta-num"><span data-count="300">0</span>M+</span>
+                    <span class="v2-cta-lbl">People with CVD</span>
+                </div>
+                <div class="v2-cta-divider"></div>
+                <div class="v2-cta-stat">
+                    <span class="v2-cta-num"><span data-count="4">0</span></span>
+                    <span class="v2-cta-lbl">CVD Types Covered</span>
+                </div>
+                <div class="v2-cta-divider"></div>
+                <div class="v2-cta-stat">
+                    <span class="v2-cta-num">&lt;60s</span>
+                    <span class="v2-cta-lbl">Full Screening</span>
+                </div>
+            </div>
+
+            <div class="v2-cta-actions">
+                <a href="/exam" class="v2-cta-btn-primary">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polygon points="5 3 19 12 5 21 5 3"/>
+                    </svg>
+                    Start Free Exam
+                </a>
+                <a href="/simulator" class="v2-cta-btn-ghost">Try Simulator →</a>
+            </div>
+
+            <div class="v2-cta-tools">
+                <a href="/simulator" class="v2-tool-pill">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    Simulator
+                </a>
+                <a href="/generator" class="v2-tool-pill">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>
+                    Generator
+                </a>
+                <a href="/exam" class="v2-tool-pill">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/></svg>
+                    Vision Exam
+                </a>
+                <a href="/detector" class="v2-tool-pill">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    Audit
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    /* Animate CVD bar fills on scroll into view */
+    document.addEventListener('DOMContentLoaded', function () {
+        var fills = document.querySelectorAll('.cvd-fill[data-width]');
+        if (!fills.length) return;
+        var barObs = new IntersectionObserver(function (entries) {
+            entries.forEach(function (e) {
+                if (e.isIntersecting) {
+                    var el = e.target;
+                    setTimeout(function () {
+                        el.style.width = el.getAttribute('data-width') + '%';
+                    }, 200);
+                    barObs.unobserve(el);
+                }
+            });
+        }, { threshold: 0.3 });
+        fills.forEach(function (f) { f.style.width = '0%'; barObs.observe(f); });
+
+        /* Animate CTA stat counters */
+        var counters = document.querySelectorAll('[data-count]');
+        var countObs = new IntersectionObserver(function (entries) {
+            entries.forEach(function (e) {
+                if (e.isIntersecting) {
+                    var el = e.target, target = parseInt(el.getAttribute('data-count')), start = 0;
+                    var dur = 1600, step = Math.ceil(target / (dur / 16));
+                    var t = setInterval(function () {
+                        start = Math.min(start + step, target);
+                        el.textContent = start;
+                        if (start >= target) clearInterval(t);
+                    }, 16);
+                    countObs.unobserve(el);
+                }
+            });
+        }, { threshold: 0.5 });
+        counters.forEach(function (c) { countObs.observe(c); });
+    });
+</script>
+{% endblock %}

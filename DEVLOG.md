@@ -295,3 +295,8 @@
 - Date: 2026-04-02
 - Status: Completed
 
+
+## [60] Improve exam question randomization
+- Date: 2026-04-03
+- Status: Completed
+
